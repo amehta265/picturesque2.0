@@ -133,7 +133,6 @@ export class ModelService {
       
             console.log("Prediction: Start")
             const predictionsTensor:tf.Tensor = this.model.predict(preProcessedImage) as tf.Tensor;
-            
             console.log("Prediction: Done")
             const timePredictionDone = new Date().getTime()
       
