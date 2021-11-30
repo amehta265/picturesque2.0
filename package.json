@@ -36,6 +36,7 @@
     "expo-web-browser": "~8.6.0",
     "fs": "^0.0.1-security",
     "jpeg-js": "^0.3.7",
+    "native-base": "^2.4.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "0.63.4",
@@ -46,6 +47,8 @@
     "react-native-paper": "^4.0.1",
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "~2.15.2",
+    "react-native-svg": "12.1.0",
+    "react-native-svg-charts": "5.0.0",
     "react-native-unimodules": "~0.12.0",
     "react-native-web": "~0.13.12"
   },
@@ -53,6 +56,7 @@
     "@babel/core": "~7.9.0",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
+    "@types/react-native-svg-charts": "^5.0.12",
     "babel-preset-expo": "8.3.0",
     "jest-expo": "^40.0.0",
     "typescript": "^4.5.2"
