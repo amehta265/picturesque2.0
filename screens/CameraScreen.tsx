@@ -27,7 +27,7 @@ type State = {
   loading:boolean;
   isTfReady: boolean;
   isModelReady: boolean;
-  predictions: ModelPrediction[]|null;
+  predictions: String[]|null;
   error:string|null;
   timing:IModelPredictionTiming|null|undefined;
 };
@@ -99,26 +99,19 @@ export default class HomeScreen extends React.Component<{},State> {
           return <ActivityIndicator/>
       }
       let predictions= this.state.predictions || [];
-   
-      if (predictions.length > 0) {
+      
+      if (Object.keys(predictions).length > 1) {
           return (
               <View style={styles.predictionsContentContainer}>
-                  <Text h3>Predictions</Text>
+                  <Text h3>Prediction </Text>
                   <View>
-                      {
-                          predictions.map((item, index) => (
-                              <ListItem key={index} >
-                                <ListItem.Content >
-
-                                  <ListItem.Title>{item.className}</ListItem.Title>
-                                  <ListItem.Subtitle>{`prob: ${item.probability.toFixed(AppConfig.precision)}`}</ListItem.Subtitle>
-                                </ListItem.Content>
-
-                              </ListItem>
-                          ))
-                      }
+                    { Object.values(predictions).map((className, Prob) => {
+                      return (
+                        <Text> {className} </Text>
+                      )
+                    })
+                    }
                   </View>
-
 
                   <Text h3>Timing (ms)</Text>
                   <View>
@@ -211,7 +204,7 @@ export default class HomeScreen extends React.Component<{},State> {
       
       this.setState({ image: res})
       console.log('numTensors (before prediction): ' + tf.memory().numTensors);
-      this.setState({ predictions: [] ,error:null , loading:true })
+      this.setState({ predictions: null ,error:null , loading:true })
 
       const predictionResponse = await this.modelService.classifyImage(res);
       
@@ -222,7 +215,6 @@ export default class HomeScreen extends React.Component<{},State> {
         const predictions = predictionResponse.predictions  || null;
         this.setState({ predictions: predictions, timing:predictionResponse.timing,  loading:false})
       }
-      
       
       //tf.dispose(predictions);
       console.log('numTensors (after prediction): ' + tf.memory().numTensors);
@@ -271,19 +263,21 @@ const styles = StyleSheet.create({
   predictionsContainer: {
       padding: 10,
       justifyContent: 'center',
+      color: 'black'
   },
 
   predictionsContentContainer: {
       padding: 10,
+      color: "black"
   },
   predictionRow: {
       flexDirection: "row",
   },
   predictionRowCategory: {
-      justifyContent: "space-between"
+      justifyContent: "space-between",
   },
   predictionRowLabel: {
-      justifyContent: "space-between"
+      justifyContent: "space-between",
   }
 });
 
