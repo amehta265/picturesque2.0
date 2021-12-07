@@ -27,15 +27,19 @@ type State = {
   loading:boolean;
   isTfReady: boolean;
   isModelReady: boolean;
-  predictions: String[]|null;
   error:string|null;
   timing:IModelPredictionTiming|null|undefined;
+  predictions: String[] | null;
 };
 
-export default class HomeScreen extends React.Component<{},State> {
+
+
+export default class CameraScreen extends React.Component<{},State> {
   static navigationOptions = {
     header: null,
   };
+
+  static answerShared: String[] | null;
 
   state:State = {
       image: {},
@@ -44,8 +48,9 @@ export default class HomeScreen extends React.Component<{},State> {
       isModelReady: false,
       predictions: null,
       error:null,
-      timing:null
-  }
+      timing:null,
+  };
+
 
   modelService!:ModelService;
 
@@ -53,7 +58,7 @@ export default class HomeScreen extends React.Component<{},State> {
     this.setState({ loading: true });
     this.modelService = await ModelService.create(AppConfig.imageSize);
     this.setState({ isTfReady: true,isModelReady: true,loading: false  });
-  }
+  };
 
   render() {
 
@@ -207,6 +212,7 @@ export default class HomeScreen extends React.Component<{},State> {
       this.setState({ predictions: null ,error:null , loading:true })
 
       const predictionResponse = await this.modelService.classifyImage(res);
+      //PredictionState.setState({pred: predictionResponse.predictions})
       
       
       if (predictionResponse.error){
@@ -214,6 +220,7 @@ export default class HomeScreen extends React.Component<{},State> {
       }else{
         const predictions = predictionResponse.predictions  || null;
         this.setState({ predictions: predictions, timing:predictionResponse.timing,  loading:false})
+        CameraScreen.answerShared = predictions;
       }
       
       //tf.dispose(predictions);
@@ -223,7 +230,6 @@ export default class HomeScreen extends React.Component<{},State> {
       console.log('Exception Error: ', error)
     }
   }
-
 }
 
 

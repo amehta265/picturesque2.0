@@ -5,8 +5,8 @@ import Markdown from 'react-native-markdown-display';
 import {AppConfig} from  "../config";
 import {getColor} from "../components/Themed";
 import { PieChart } from 'react-native-svg-charts';
-//import {Card} from 'react-native-elements';
-//import {SafeAreaView, ScrollView, Image, Alert, ImageBackground, FlatList} from "react-native"
+//import { ModelService, IModelPredictionResponse,IModelPredictionTiming,ModelPrediction } from '../components/ModelService';
+import CameraScreen from'./CameraScreen';
 import {Toast, Button, Container, Icon, Content, CardItem, Card, List, ListItem, Header} from 'native-base';
 const axios = require('axios');
 var nutritionKeys = require('../nutritionApiKey');
@@ -28,6 +28,7 @@ interface IState {
   servingQty: number,
   servingUnit: String,
   name: String
+  predictions: String[] | null
 }
 
 
@@ -45,13 +46,25 @@ export default class StatsScreen extends Component<IProps, IState> {
       totalFat: 0,
       servingQty: 0,
       servingUnit: "",
-      name: ""
+      name: "",
+      predictions: null
     }
   }
 
-  componentDidMount() {
+  cameraScreen!: String[] | null;
+  newCameraScreen!: String[] | null;
+
+  async componentDidMount() {
     this.getInformation()
-  }
+    this.cameraScreen =  CameraScreen.answerShared;
+    console.log("Predictions value in stats Screen componentDidMount() method")
+    console.log(this.cameraScreen);
+    console.log(typeof(this.cameraScreen));
+    console.log("Trying out new library");
+    //this.newCameraScreen = SharedState.predictionState
+
+  };
+
 
   getInformation = () => {
     let data = "chicken noodle soup";
