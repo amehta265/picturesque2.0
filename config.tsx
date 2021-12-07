@@ -1,5 +1,4 @@
 const AppConfig = 
-
 {
     title : "Picturesque"
     ,description: ` Mobile Apps Class: CS 4261: Team Gain Train`

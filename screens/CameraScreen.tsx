@@ -27,15 +27,19 @@ type State = {
   loading:boolean;
   isTfReady: boolean;
   isModelReady: boolean;
-  predictions: ModelPrediction[]|null;
   error:string|null;
   timing:IModelPredictionTiming|null|undefined;
+  predictions: String[] | null;
 };
 
-export default class HomeScreen extends React.Component<{},State> {
+
+
+export default class CameraScreen extends React.Component<{},State> {
   static navigationOptions = {
     header: null,
   };
+
+  static answerShared: String[] | null;
 
   state:State = {
       image: {},
@@ -44,8 +48,9 @@ export default class HomeScreen extends React.Component<{},State> {
       isModelReady: false,
       predictions: null,
       error:null,
-      timing:null
-  }
+      timing:null,
+  };
+
 
   modelService!:ModelService;
 
@@ -53,7 +58,7 @@ export default class HomeScreen extends React.Component<{},State> {
     this.setState({ loading: true });
     this.modelService = await ModelService.create(AppConfig.imageSize);
     this.setState({ isTfReady: true,isModelReady: true,loading: false  });
-  }
+  };
 
   render() {
 
@@ -99,26 +104,19 @@ export default class HomeScreen extends React.Component<{},State> {
           return <ActivityIndicator/>
       }
       let predictions= this.state.predictions || [];
-   
-      if (predictions.length > 0) {
+      
+      if (Object.keys(predictions).length > 1) {
           return (
               <View style={styles.predictionsContentContainer}>
-                  <Text h3>Predictions</Text>
+                  <Text h3>Prediction </Text>
                   <View>
-                      {
-                          predictions.map((item, index) => (
-                              <ListItem key={index} >
-                                <ListItem.Content >
-
-                                  <ListItem.Title>{item.className}</ListItem.Title>
-                                  <ListItem.Subtitle>{`prob: ${item.probability.toFixed(AppConfig.precision)}`}</ListItem.Subtitle>
-                                </ListItem.Content>
-
-                              </ListItem>
-                          ))
-                      }
+                    { Object.values(predictions).map((className, Prob) => {
+                      return (
+                        <Text> {className} </Text>
+                      )
+                    })
+                    }
                   </View>
-
 
                   <Text h3>Timing (ms)</Text>
                   <View>
@@ -211,9 +209,10 @@ export default class HomeScreen extends React.Component<{},State> {
       
       this.setState({ image: res})
       console.log('numTensors (before prediction): ' + tf.memory().numTensors);
-      this.setState({ predictions: [] ,error:null , loading:true })
+      this.setState({ predictions: null ,error:null , loading:true })
 
       const predictionResponse = await this.modelService.classifyImage(res);
+      //PredictionState.setState({pred: predictionResponse.predictions})
       
       
       if (predictionResponse.error){
@@ -221,8 +220,8 @@ export default class HomeScreen extends React.Component<{},State> {
       }else{
         const predictions = predictionResponse.predictions  || null;
         this.setState({ predictions: predictions, timing:predictionResponse.timing,  loading:false})
+        CameraScreen.answerShared = predictions;
       }
-      
       
       //tf.dispose(predictions);
       console.log('numTensors (after prediction): ' + tf.memory().numTensors);
@@ -231,7 +230,6 @@ export default class HomeScreen extends React.Component<{},State> {
       console.log('Exception Error: ', error)
     }
   }
-
 }
 
 
@@ -271,19 +269,21 @@ const styles = StyleSheet.create({
   predictionsContainer: {
       padding: 10,
       justifyContent: 'center',
+      color: 'black'
   },
 
   predictionsContentContainer: {
       padding: 10,
+      color: "black"
   },
   predictionRow: {
       flexDirection: "row",
   },
   predictionRowCategory: {
-      justifyContent: "space-between"
+      justifyContent: "space-between",
   },
   predictionRowLabel: {
-      justifyContent: "space-between"
+      justifyContent: "space-between",
   }
 });
 
