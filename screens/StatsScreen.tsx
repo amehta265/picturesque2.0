@@ -14,6 +14,7 @@ var nutritionID = nutritionKeys.apiID;
 var nutritionKey = nutritionKeys.apiKey;
 
 interface IProps {
+  answer?: String;
 }
 
 interface IState {
@@ -67,7 +68,12 @@ export default class StatsScreen extends Component<IProps, IState> {
 
 
   getInformation = () => {
-    let data = "chicken noodle soup";
+    let data = this.props.answer;
+
+    if (!data) {
+      return;
+    }
+
     this.setState({name: data});
     const headers = {
         'content-type': 'application/json',
