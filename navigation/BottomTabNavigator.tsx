@@ -9,38 +9,44 @@ import HomeScreen from '../screens/HomeScreen';
 import AboutScreen from '../screens/CameraScreen';
 import DebugScreen from '../screens/StatsScreen';
 import { BottomTabParamList, HomeParamList, CameraParamList, StatsParamList } from '../types';
+import {useContext, useState} from "react";
+import AnswerContext from "./sharingState";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+  const [answer, setAnswer] = useState<String>();
 
   return (
-    <BottomTab.Navigator
-      initialRouteName="Home"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
-      <BottomTab.Screen
-        name="Home"
-        component={HomeNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name={Platform.OS === 'ios' ? 'ios-home' : 'md-home'} />,
-        }}
-      />
-      <BottomTab.Screen
-        name="Camera"
-        component={TabCameraNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name={Platform.OS === 'ios' ? 'ios-camera' : 'md-camera'} />,
-        }}
-      />
-      <BottomTab.Screen
-        name="Stats"
-        component={TabStatsNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name={Platform.OS === 'ios' ? 'ios-information' : 'md-information'} />,
-        }}
-      />
-    </BottomTab.Navigator>
+    <AnswerContext.Provider value={{answer, setAnswer}}>
+      <BottomTab.Navigator
+        initialRouteName="Home"
+        tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
+        <BottomTab.Screen
+          name="Home"
+          component={HomeNavigator}
+          options={{
+            tabBarIcon: ({ color }) => <TabBarIcon color={color} name={Platform.OS === 'ios' ? 'ios-home' : 'md-home'} />,
+          }}
+        />
+        <BottomTab.Screen
+          name="Camera"
+          component={TabCameraNavigator}
+          options={{
+            tabBarIcon: ({ color }) => <TabBarIcon color={color} name={Platform.OS === 'ios' ? 'ios-camera' : 'md-camera'} />,
+          }}
+        />
+        <BottomTab.Screen
+          name="Stats"
+          component={TabStatsNavigator}
+          options={{
+            tabBarIcon: ({ color }) => <TabBarIcon color={color} name={Platform.OS === 'ios' ? 'ios-information' : 'md-information'} />,
+          }}
+        />
+      </BottomTab.Navigator>
+    </AnswerContext.Provider>
+    
   );
 }
 
@@ -69,13 +75,16 @@ function HomeNavigator() {
 const AboutTabStack = createStackNavigator<CameraParamList>();
 
 function TabCameraNavigator() {
+  const {answer, setAnswer} = useContext(AnswerContext);
+
   return (
     <AboutTabStack.Navigator>
       <AboutTabStack.Screen
         name="CameraScreen"
-        component={AboutScreen}
         options={{ headerTitle: 'Camera' }}
-      />
+      >
+        {() => <AboutScreen answer={answer} setAnswer={setAnswer} />}
+      </AboutTabStack.Screen>
     </AboutTabStack.Navigator>
   );
 }
@@ -83,13 +92,15 @@ function TabCameraNavigator() {
 const DebugTabStack = createStackNavigator<StatsParamList>();
 
 function TabStatsNavigator() {
+  const {answer} = useContext(AnswerContext)
   return (
     <DebugTabStack.Navigator>
       <DebugTabStack.Screen
         name="StatsScreen"
-        component={DebugScreen}
         options={{ headerTitle: 'Stats' }}
-      />
+      >
+        {() => <DebugScreen answer={answer} />}
+      </DebugTabStack.Screen>
     </DebugTabStack.Navigator>
   );
 }
