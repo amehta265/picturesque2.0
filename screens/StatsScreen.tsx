@@ -14,6 +14,7 @@ var nutritionID = nutritionKeys.apiID;
 var nutritionKey = nutritionKeys.apiKey;
 
 interface IProps {
+  answer?: String;
 }
 
 interface IState {
@@ -27,8 +28,8 @@ interface IState {
   totalFat: number
   servingQty: number,
   servingUnit: String,
-  name: String
-  predictions: String[] | null
+  name: String,
+  predictions: String | null
 }
 
 
@@ -51,23 +52,22 @@ export default class StatsScreen extends Component<IProps, IState> {
     }
   }
 
-  cameraScreen!: String[] | null;
-  newCameraScreen!: String[] | null;
-
-  async componentDidMount() {
-    this.getInformation()
-    this.cameraScreen =  CameraScreen.answerShared;
-    console.log("Predictions value in stats Screen componentDidMount() method")
-    console.log(this.cameraScreen);
-    console.log(typeof(this.cameraScreen));
-    console.log("Trying out new library");
-    //this.newCameraScreen = SharedState.predictionState
-
+  componentDidMount() {
+    this.getInformation(this.props.answer);
   };
 
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (prevProps.answer !== this.props.answer) {
+      this.getInformation(this.props.answer);
+    }
+  }
 
-  getInformation = () => {
-    let data = "chicken noodle soup";
+  getInformation = (data?: String) => {
+    console.log("GetInfo in stats screen");
+    console.log(data);
+    if (!data) {
+      return;
+    }
     this.setState({name: data});
     const headers = {
         'content-type': 'application/json',

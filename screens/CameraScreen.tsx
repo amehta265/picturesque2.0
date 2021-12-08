@@ -1,26 +1,16 @@
 import * as React from 'react';
-
-//import { Text, View } from '../components/Themed';
-
 import * as Permissions from 'expo-permissions'
 import * as tf from '@tensorflow/tfjs';
 import * as ImageManipulator from 'expo-image-manipulator';
-
-
 import {
   Image,
   StyleSheet,
 } from 'react-native';
-import {AppConfig} from "../config"
-
-import {Text ,View,getColor,ActivityIndicator,ScrollView} from '../components/Themed'
-
+import {AppConfig} from "../config";
+import {Text ,View,getColor,ActivityIndicator,ScrollView} from '../components/Themed';
 import {Icon, ListItem} from 'react-native-elements';
-
-
 import * as ImagePicker from 'expo-image-picker';
 import { ModelService, IModelPredictionResponse,IModelPredictionTiming,ModelPrediction } from '../components/ModelService';
-
 
 type State = {
   image: ImageManipulator.ImageResult | {}; 
@@ -33,14 +23,12 @@ type State = {
 };
 
 
-
-export default class CameraScreen extends React.Component<{},State> {
+export default class CameraScreen extends React.Component<{answer?: String, setAnswer: (answer?: String) => void},State> {
   static navigationOptions = {
     header: null,
   };
 
   static answerShared: String[] | null;
-
   state:State = {
       image: {},
       loading: false,
@@ -65,36 +53,33 @@ export default class CameraScreen extends React.Component<{},State> {
     const modelLoadingStatus = this.state.isModelReady ? "Yes" : "No";
     // contentContainerStyle={styles.contentContainer}
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.container} >
+      <ScrollView style={styles.container}>
+          <View style={styles.container} >
 
-                <View style={styles.titleContainer}>
-                    <Text h1>{AppConfig.title}</Text>
-                </View>
+              <View style={styles.titleContainer}>
+                  <Text h1>{AppConfig.title}</Text>
+              </View>
+              <View>
+                <Text>Model Status: {modelLoadingStatus}</Text>
+              </View>
 
+              <View style={styles.actionsContainer}>
+                  <View style={styles.callToActionContainer}>
+                      <Icon name='camera-alt' raised onPress={this._pickImageFromCamera}/>
+                      <Icon name='image' raised onPress={this._pickImageFromLibrary}/>
+                  </View>
+              </View>
 
-                <View>
-                  <Text>Model Status: {modelLoadingStatus}</Text>
-                </View>
-
-                <View style={styles.actionsContainer}>
-                    <View style={styles.callToActionContainer}>
-                        <Icon name='camera-alt' raised onPress={this._pickImageFromCamera}/>
-                        <Icon name='image' raised onPress={this._pickImageFromLibrary}/>
-                    </View>
-                </View>
-
-                <View style={styles.imageContainer}>
-                    <Image source={this.state.image} style={{height: 200, width: 200}}/>
-                </View>
+              <View style={styles.imageContainer}>
+                  <Image source={this.state.image} style={{height: 200, width: 200}}/>
+              </View>
 
 
-                <View style={styles.predictionsContainer}>
-                    {this.renderPredictions()}
-                </View>
-            </View>
-
-        </ScrollView>
+              <View style={styles.predictionsContainer}>
+                  {this.renderPredictions()}
+              </View>
+          </View>
+      </ScrollView>
     );
   }
 
@@ -210,17 +195,21 @@ export default class CameraScreen extends React.Component<{},State> {
       this.setState({ image: res})
       console.log('numTensors (before prediction): ' + tf.memory().numTensors);
       this.setState({ predictions: null ,error:null , loading:true })
-
-      const predictionResponse = await this.modelService.classifyImage(res);
-      //PredictionState.setState({pred: predictionResponse.predictions})
       
+      const predictionResponse = await this.modelService.classifyImage(res);
+      //PredictionState.setState({pred: predictionResponse.predictions});
       
       if (predictionResponse.error){
         this.setState({ error: predictionResponse.error , loading:false})
       }else{
-        const predictions = predictionResponse.predictions  || null;
+        let predictions: any
+        predictions = predictionResponse.predictions  || null;
         this.setState({ predictions: predictions, timing:predictionResponse.timing,  loading:false})
-        CameraScreen.answerShared = predictions;
+        console.log("classifyImage stuff");
+        console.log(predictions.className.split(',')[0]);
+        this.props.setAnswer(predictions.className.split(',')[0]);
+        console.log("below is the props in the classify image method")
+        console.log(this.props.setAnswer);
       }
       
       //tf.dispose(predictions);
