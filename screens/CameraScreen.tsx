@@ -34,7 +34,7 @@ type State = {
 
 
 
-export default class CameraScreen extends React.Component<{},State> {
+export default class CameraScreen extends React.Component<{answer?: String, setAnswer: (answer?: String) => void},State> {
   static navigationOptions = {
     header: null,
   };
@@ -220,7 +220,7 @@ export default class CameraScreen extends React.Component<{},State> {
       }else{
         const predictions = predictionResponse.predictions  || null;
         this.setState({ predictions: predictions, timing:predictionResponse.timing,  loading:false})
-        CameraScreen.answerShared = predictions;
+        this.props.setAnswer(predictions?.[0])
       }
       
       //tf.dispose(predictions);
