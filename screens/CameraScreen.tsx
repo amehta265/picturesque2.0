@@ -5,6 +5,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import {
   Image,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import {AppConfig} from "../config";
 import {Text ,View,getColor,ActivityIndicator,ScrollView} from '../components/Themed';
@@ -58,9 +59,10 @@ export default class CameraScreen extends React.Component<{answer?: String, setA
 
               <View style={styles.titleContainer}>
                   <Text h1>{AppConfig.title}</Text>
+                    <Text style={{fontSize: 23, paddingLeft: 10, paddingRight: 10, paddingTop: 20, paddingBottom: 20}}>Take a picture of your food using the camera, or load a picture from your camera roll:</Text>
               </View>
               <View>
-                <Text>Model Status: {modelLoadingStatus}</Text>
+                <Text style={{paddingLeft: 10}}>Model Status: {modelLoadingStatus}</Text>
               </View>
 
               <View style={styles.actionsContainer}>
@@ -110,7 +112,11 @@ export default class CameraScreen extends React.Component<{answer?: String, setA
                     <Text>preprocessing time: {this.state.timing?.imagePreprocessing}</Text>
                     <Text>prediction time: {this.state.timing?.imagePrediction}</Text>
                     <Text>decode time: {this.state.timing?.imageDecodePrediction}</Text>
-                   
+                    <View style={{alignItems: 'center', paddingTop: 10}}>
+                      <TouchableOpacity style={{width: 300, height: 50, borderRadius: 10, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center'}}>
+                        <Text style={{color: 'black'}}>Nutrients and calorie info</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
 
               </View>
